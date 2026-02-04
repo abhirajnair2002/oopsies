@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YAAYYYY</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    img {
+      width: 420px;
+      border-radius: 30px;
+      box-shadow: 0 0 40px rgba(255,255,255,0.4);
+    }
+
+    p {
+      margin-top: 20px;
+      font-size: 28px;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<div class="content">
+  <img src="you-and-me.jpg">
+  <p><strong>YAAYYYY...</strong> aiyaou 🥺</p>
+</div>
+
+<script>
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+let particles = [];
+
+function explode(x, y) {
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x, y,
+      vx: (Math.random() - 0.5) * 8,
+      vy: (Math.random() - 0.5) * 8,
+      life: 80
+    });
+  }
+}
+
+function animate() {
+  ctx.fillStyle = "rgba(0,0,0,0.2)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach((p, i) => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life--;
+    ctx.fillStyle = "white";
+    ctx.fillRect(p.x, p.y, 2, 2);
+    if (p.life <= 0) particles.splice(i, 1);
+  });
+
+  requestAnimationFrame(animate);
+}
+
+setInterval(() => {
+  explode(Math.random() * canvas.width, Math.random() * canvas.height * 0.5);
+}, 800);
+
+animate();
+</script>
+
+</body>
+</html>

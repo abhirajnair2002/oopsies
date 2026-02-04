@@ -1,0 +1,89 @@
+body {
+    margin: 0;
+    height: 100vh;
+    background: #6fa8dc;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 💙 Flying hearts */
+.heart {
+    position: absolute;
+    color: pink;
+    font-size: 20px;
+    animation: floatUp 6s linear infinite;
+    opacity: 0.7;
+}
+
+@keyframes floatUp {
+    from {
+        transform: translateY(100vh);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-10vh);
+        opacity: 0;
+    }
+}
+
+/* 🤍 Card */
+.card {
+    background: white;
+    padding: 40px 50px;
+    border-radius: 20px;
+    width: 380px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    z-index: 2;
+}
+
+/* 🐰 Bunny */
+.bunny {
+    width: 130px;
+    margin-bottom: 15px;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.emoji {
+    font-size: 26px;
+    margin-bottom: 25px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    position: relative;
+}
+
+button {
+    padding: 12px 28px;
+    font-size: 16px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.4s ease;
+}
+
+#yesBtn {
+    background: #ff4d6d;
+    color: white;
+}
+
+#noBtn {
+    background: #ccc;
+    position: fixed;
+    z-index: 9999;
+}

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Valentine</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+    cursor: default;
+  }
+
+  body {
+    margin: 0;
+    height: 100vh;
+    background: #6fa8ff;
+    overflow: hidden;
+    font-family: "Arial", sans-serif;
+  }
+
+  /* floating hearts */
+  .heart {
+    position: absolute;
+    color: pink;
+    font-size: 20px;
+    animation: floatUp 6s linear infinite;
+  }
+
+  @keyframes floatUp {
+    from { transform: translateY(100vh); opacity: 1; }
+    to { transform: translateY(-10vh); opacity: 0; }
+  }
+
+  .card {
+    position: relative;
+    width: 600px;
+    margin: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    z-index: 10;
+  }
+
+  .card img {
+    width: 160px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    margin: 10px 0 20px;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-top: 20px;
+    position: relative;
+  }
+
+  button {
+    padding: 15px 35px;
+    font-size: 18px;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.4s ease;
+  }
+
+  #yesBtn {
+    background: #ff6fae;
+    color: white;
+    z-index: 2;
+  }
+
+  #noBtn {
+    background: #ddd;
+    position: relative; /* IMPORTANT: starts normal */
+    z-index: 3;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <img src="bunny.png" alt="bunny" />
+  <h1>Will you please be my valentine, nushi? 🥺</h1>
+
+  <div class="buttons">
+    <button id="yesBtn">Yes 💖</button>
+    <button id="noBtn">No 😐</button>
+  </div>
+</div>
+
+<script>
+  /* hearts */
+  setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerText = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = 15 + Math.random() * 20 + "px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+  }, 400);
+
+  const noBtn = document.getElementById("noBtn");
+  const yesBtn = document.getElementById("yesBtn");
+
+  let noClicked = false;
+  let vx = 6, vy = 6;
+  let growInterval;
+
+  noBtn.addEventListener("click", () => {
+    if (!noClicked) {
+      noClicked = true;
+      noBtn.innerText = "Sorry, nope, not accepted 😛";
+
+      const rect = noBtn.getBoundingClientRect();
+      noBtn.style.position = "fixed";
+      noBtn.style.left = rect.left + "px";
+      noBtn.style.top = rect.top + "px";
+
+      startChase();
+      startGrowingYes();
+    }
+  });
+
+  function startGrowingYes() {
+    let scale = 1;
+    growInterval = setInterval(() => {
+      scale += 0.05;
+      yesBtn.style.transform = `scale(${scale})`;
+    }, 300);
+  }
+
+  function startChase() {
+    setInterval(() => {
+      let x = noBtn.offsetLeft;
+      let y = noBtn.offsetTop;
+
+      x += vx;
+      y += vy;
+
+      if (x <= 0 || x + noBtn.offsetWidth >= window.innerWidth) vx *= -1;
+      if (y <= 0 || y + noBtn.offsetHeight >= window.innerHeight) vy *= -1;
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    }, 20);
+  }
+
+  document.addEventListener("mousemove", e => {
+    if (!noClicked) return;
+
+    const rect = noBtn.getBoundingClientRect();
+    const dx = rect.left - e.clientX;
+    const dy = rect.top - e.clientY;
+
+    if (Math.abs(dx) < 120 && Math.abs(dy) < 120) {
+      vx += dx > 0 ? 1 : -1;
+      vy += dy > 0 ? 1 : -1;
+    }
+  });
+
+  yesBtn.addEventListener("click", () => {
+    window.location.href = "yay.html";
+  });
+</script>
+
+</body>
+</html>
