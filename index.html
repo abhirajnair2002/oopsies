@@ -18,12 +18,12 @@
     font-family: "Arial", sans-serif;
   }
 
-  /* floating hearts */
   .heart {
     position: absolute;
     color: pink;
     font-size: 20px;
     animation: floatUp 6s linear infinite;
+    z-index: 1;
   }
 
   @keyframes floatUp {
@@ -59,7 +59,6 @@
     align-items: center;
     gap: 30px;
     margin-top: 20px;
-    position: relative;
   }
 
   button {
@@ -79,7 +78,7 @@
 
   #noBtn {
     background: #ddd;
-    position: relative; /* IMPORTANT: starts normal */
+    position: relative;
     z-index: 3;
   }
 </style>
@@ -98,7 +97,6 @@
 </div>
 
 <script>
-  /* hearts */
   setInterval(() => {
     const heart = document.createElement("div");
     heart.className = "heart";
@@ -113,27 +111,30 @@
   const yesBtn = document.getElementById("yesBtn");
 
   let noClicked = false;
-  let vx = 6, vy = 6;
-  let growInterval;
+  let vx = 2.8;
+  let vy = 2.8;
 
   noBtn.addEventListener("click", () => {
-    if (!noClicked) {
-      noClicked = true;
-      noBtn.innerText = "Sorry, nope, not accepted 😛";
+    if (noClicked) return;
+    noClicked = true;
 
-      const rect = noBtn.getBoundingClientRect();
-      noBtn.style.position = "fixed";
-      noBtn.style.left = rect.left + "px";
-      noBtn.style.top = rect.top + "px";
+    noBtn.innerText = "Sorry, nope, not accepted 😛";
 
-      startChase();
-      startGrowingYes();
-    }
+    const rect = noBtn.getBoundingClientRect();
+    document.body.appendChild(noBtn);
+
+    noBtn.style.position = "fixed";
+    noBtn.style.left = rect.left + "px";
+    noBtn.style.top = rect.top + "px";
+    noBtn.style.zIndex = "9999";
+
+    startChase();
+    startGrowingYes();
   });
 
   function startGrowingYes() {
     let scale = 1;
-    growInterval = setInterval(() => {
+    setInterval(() => {
       scale += 0.05;
       yesBtn.style.transform = `scale(${scale})`;
     }, 300);
@@ -141,17 +142,17 @@
 
   function startChase() {
     setInterval(() => {
-      let x = noBtn.offsetLeft;
-      let y = noBtn.offsetTop;
+      let x = noBtn.offsetLeft + vx;
+      let y = noBtn.offsetTop + vy;
 
-      x += vx;
-      y += vy;
+      const maxX = window.innerWidth - noBtn.offsetWidth;
+      const maxY = window.innerHeight - noBtn.offsetHeight;
 
-      if (x <= 0 || x + noBtn.offsetWidth >= window.innerWidth) vx *= -1;
-      if (y <= 0 || y + noBtn.offsetHeight >= window.innerHeight) vy *= -1;
+      if (x <= 0 || x >= maxX) vx *= -1;
+      if (y <= 0 || y >= maxY) vy *= -1;
 
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
+      noBtn.style.left = Math.max(0, Math.min(x, maxX)) + "px";
+      noBtn.style.top = Math.max(0, Math.min(y, maxY)) + "px";
     }, 20);
   }
 
@@ -159,12 +160,12 @@
     if (!noClicked) return;
 
     const rect = noBtn.getBoundingClientRect();
-    const dx = rect.left - e.clientX;
-    const dy = rect.top - e.clientY;
+    const dx = rect.left + rect.width / 2 - e.clientX;
+    const dy = rect.top + rect.height / 2 - e.clientY;
 
     if (Math.abs(dx) < 120 && Math.abs(dy) < 120) {
-      vx += dx > 0 ? 1 : -1;
-      vy += dy > 0 ? 1 : -1;
+      vx += dx > 0 ? 0.25 : -0.25;
+      vy += dy > 0 ? 0.25 : -0.25;
     }
   });
 
