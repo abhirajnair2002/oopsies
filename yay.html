@@ -13,10 +13,6 @@
       font-family: Arial, sans-serif;
       color: white;
     }
- <!-- Background Music -->
-  <audio id="bg-music" autoplay loop>
-    <source src="everywhere.mp3" type="audio/mpeg">
-  </audio>
     canvas {
       position: fixed;
       top: 0;
@@ -49,11 +45,16 @@
 </head>
 <body>
 
+<!-- Background Music -->
+<audio id="bg-music" loop>
+  <source src="everywhere.mp3" type="audio/mpeg">
+</audio>
+
 <canvas id="fireworks"></canvas>
 
 <div class="content">
   <img src="you-and-me.jpg">
-  <p><strong>YAAYYYY...</strong> aiyaou 🥺</p>
+  <p><strong>HEHEHE YAAYYYY...</strong> aiyaouu 🥺</p>
 </div>
 
 <script>
@@ -96,8 +97,15 @@ setInterval(() => {
 }, 800);
 
 animate();
+
+// --- MUSIC AUTO-START ON CLICK FROM 10 SECONDS ---
+const music = document.getElementById('bg-music');
+
+document.body.addEventListener('click', () => {
+  music.currentTime = 21; // start at 10 seconds
+  music.play();
+}, { once: true });
 </script>
 
 </body>
 </html>
-
