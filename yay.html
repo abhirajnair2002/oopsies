@@ -13,6 +13,7 @@
       font-family: Arial, sans-serif;
       color: white;
     }
+
     canvas {
       position: fixed;
       top: 0;
@@ -29,23 +30,45 @@
       align-items: center;
       flex-direction: column;
       text-align: center;
+      animation: fadeIn 1.6s ease forwards;
     }
 
     img {
       width: 420px;
       border-radius: 30px;
-      box-shadow: 0 0 40px rgba(255,255,255,0.4);
+      box-shadow: 0 0 40px rgba(255,180,200,0.6);
+      animation: heartbeat 2.2s ease-in-out infinite;
     }
 
     p {
       margin-top: 20px;
       font-size: 28px;
+      animation: fadeIn 2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes heartbeat {
+      0%, 100% {
+        box-shadow: 0 0 35px rgba(255,180,200,0.5);
+      }
+      50% {
+        box-shadow: 0 0 55px rgba(255,180,200,0.85);
+      }
     }
   </style>
 </head>
 <body>
 
-<!-- Background Music -->
 <audio id="bg-music" loop>
   <source src="everywhere.mp3" type="audio/mpeg">
 </audio>
@@ -63,29 +86,61 @@ const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
+window.addEventListener("resize", () => {
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+});
+
 let particles = [];
 
-function explode(x, y) {
-  for (let i = 0; i < 60; i++) {
+function createBurst(x, y, count, scale = 1, alpha = 1) {
+  const colors = ["#ffd700", "#fff6cc", "#ffffff"];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = (Math.random() * 4 + 3) * scale;
+
     particles.push({
-      x, y,
-      vx: (Math.random() - 0.5) * 8,
-      vy: (Math.random() - 0.5) * 8,
-      life: 90
+      x,
+      y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 90 * scale,
+      radius: (Math.random() * 2 + 2) * scale,
+      alpha,
+      color
     });
   }
 }
 
+function explode(x, y) {
+  // primary burst
+  createBurst(x, y, 40, 1.2, 1);
+
+  // secondary Diwali-style burst
+  setTimeout(() => {
+    createBurst(x, y, 25, 0.7, 0.7);
+  }, 200);
+}
+
 function animate() {
-  ctx.fillStyle = "rgba(0,0,0,0.2)";
+  ctx.fillStyle = "rgba(0,0,0,0.25)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   particles.forEach((p, i) => {
     p.x += p.vx;
     p.y += p.vy;
     p.life--;
-    ctx.fillStyle = "white";
-    ctx.fillRect(p.x, p.y, 2, 2);
+    p.alpha -= 0.01;
+
+    ctx.beginPath();
+    ctx.globalAlpha = Math.max(p.alpha, 0);
+    ctx.fillStyle = p.color;
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
     if (p.life <= 0) particles.splice(i, 1);
   });
 
@@ -93,20 +148,32 @@ function animate() {
 }
 
 setInterval(() => {
-  explode(Math.random() * canvas.width, Math.random() * canvas.height * 0.5);
-}, 800);
+  const x = Math.random() * canvas.width;
+  const y = Math.random() * canvas.height * 0.5;
+
+  // depth effect
+  const depth = Math.random();
+  if (depth < 0.4) {
+    createBurst(x, y, 20, 0.6, 0.5);
+  } else {
+    explode(x, y);
+  }
+}, 900);
+
+// MEGA BURST ON LOAD (behind photo)
+setTimeout(() => {
+  explode(canvas.width / 2, canvas.height / 2 - 50);
+}, 600);
 
 animate();
 
-// --- MUSIC AUTO-START ON CLICK FROM 10 SECONDS ---
-const music = document.getElementById('bg-music');
-
-document.body.addEventListener('click', () => {
-  music.currentTime = 21; // start at 10 seconds
+// MUSIC START ON FIRST TAP
+const music = document.getElementById("bg-music");
+document.body.addEventListener("click", () => {
+  music.currentTime = 21;
   music.play();
 }, { once: true });
 </script>
 
 </body>
 </html>
-
