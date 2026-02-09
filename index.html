@@ -1,181 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Valentine</title>
+  <meta charset="UTF-8">
+  <title>YAAYYYY</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
 
-<style>
-  * {
-    box-sizing: border-box;
-    cursor: default;
-  }
+    .content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
 
-  body {
-    margin: 0;
-    height: 100vh;
-    background: #6fa8ff;
-    overflow: hidden;
-    font-family: "Arial", sans-serif;
-  }
+    img {
+      width: 420px;
+      border-radius: 30px;
+      box-shadow: 0 0 40px rgba(255,180,200,0.5);
+    }
 
-  .heart {
-    position: absolute;
-    color: pink;
-    font-size: 20px;
-    animation: floatUp 6s linear infinite;
-    z-index: 1;
-  }
-
-  @keyframes floatUp {
-    from { transform: translateY(100vh); opacity: 1; }
-    to { transform: translateY(-10vh); opacity: 0; }
-  }
-
-  .card {
-    position: relative;
-    width: 600px;
-    margin: auto;
-    top: 50%;
-    transform: translateY(-50%);
-    background: white;
-    border-radius: 20px;
-    padding: 40px;
-    text-align: center;
-    z-index: 10;
-  }
-
-  .card img {
-    width: 160px;
-    margin-bottom: 20px;
-  }
-
-  h1 {
-    margin: 10px 0 20px;
-  }
-
-  .buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    margin-top: 20px;
-  }
-
-  button {
-    padding: 15px 35px;
-    font-size: 18px;
-    border-radius: 40px;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.4s ease;
-  }
-
-  #yesBtn {
-    background: #ff6fae;
-    color: white;
-    z-index: 2;
-  }
-
-  #noBtn {
-    background: #ddd;
-    position: relative;
-    z-index: 3;
-  }
-</style>
+    p {
+      margin-top: 20px;
+      font-size: 28px;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="card">
-  <img src="bunny.png" alt="bunny" />
-  <h1>Will you please be my valentine, nushi? 🥺</h1>
+<!-- Background Music -->
+<audio id="bg-music" loop>
+  <source src="everywhere.mp3" type="audio/mpeg">
+</audio>
 
-  <div class="buttons">
-    <button id="yesBtn">Yes 💖</button>
-    <button id="noBtn">No 😐</button>
-  </div>
+<canvas id="fireworks"></canvas>
+
+<div class="content">
+  <img src="you-and-me.jpg">
+  <p><strong>HEHEHE YAAYYYY...</strong> aiyaouu 🥺</p>
 </div>
 
 <script>
-  // --- HEARTS GENERATOR (more hearts, denser flow) ---
-  setInterval(() => {
-    for (let i = 0; i < 3; i++) { // 3 hearts per interval
-      const heart = document.createElement("div");
-      heart.className = "heart";
-      heart.innerText = "💖";
-      heart.style.left = Math.random() * 100 + "vw";
-      heart.style.fontSize = 15 + Math.random() * 20 + "px";
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 6000);
-    }
-  }, 200); // hearts appear twice as fast
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
 
-  // --- BUTTON LOGIC ---
-  const noBtn = document.getElementById("noBtn");
-  const yesBtn = document.getElementById("yesBtn");
+let particles = [];
 
-  let noClicked = false;
-  let vx = 2.8;
-  let vy = 2.8;
-
-  noBtn.addEventListener("click", () => {
-    if (noClicked) return;
-    noClicked = true;
-
-    noBtn.innerText = "Sorry, nope, not accepted 😛";
-
-    const rect = noBtn.getBoundingClientRect();
-    document.body.appendChild(noBtn);
-
-    noBtn.style.position = "fixed";
-    noBtn.style.left = rect.left + "px";
-    noBtn.style.top = rect.top + "px";
-    noBtn.style.zIndex = "9999";
-
-    startChase();
-    startGrowingYes();
-  });
-
-  function startGrowingYes() {
-    let scale = 1;
-    setInterval(() => {
-      scale += 0.05;
-      yesBtn.style.transform = `scale(${scale})`;
-    }, 300);
+function explode(x, y) {
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x, y,
+      vx: (Math.random() - 0.5) * 8,
+      vy: (Math.random() - 0.5) * 8,
+      life: 80
+    });
   }
+}
 
-  function startChase() {
-    setInterval(() => {
-      let x = noBtn.offsetLeft + vx;
-      let y = noBtn.offsetTop + vy;
+function animate() {
+  ctx.fillStyle = "rgba(0,0,0,0.2)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const maxX = window.innerWidth - noBtn.offsetWidth;
-      const maxY = window.innerHeight - noBtn.offsetHeight;
-
-      if (x <= 0 || x >= maxX) vx *= -1;
-      if (y <= 0 || y >= maxY) vy *= -1;
-
-      noBtn.style.left = Math.max(0, Math.min(x, maxX)) + "px";
-      noBtn.style.top = Math.max(0, Math.min(y, maxY)) + "px";
-    }, 20);
-  }
-
-  document.addEventListener("mousemove", e => {
-    if (!noClicked) return;
-
-    const rect = noBtn.getBoundingClientRect();
-    const dx = rect.left + rect.width / 2 - e.clientX;
-    const dy = rect.top + rect.height / 2 - e.clientY;
-
-    if (Math.abs(dx) < 120 && Math.abs(dy) < 120) {
-      vx += dx > 0 ? 0.25 : -0.25;
-      vy += dy > 0 ? 0.25 : -0.25;
-    }
+  particles.forEach((p, i) => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life--;
+    ctx.fillStyle = "white";
+    ctx.fillRect(p.x, p.y, 2, 2);
+    if (p.life <= 0) particles.splice(i, 1);
   });
 
-  yesBtn.addEventListener("click", () => {
-    window.location.href = "yay.html";
-  });
+  requestAnimationFrame(animate);
+}
+
+setInterval(() => {
+  explode(Math.random() * canvas.width, Math.random() * canvas.height * 0.5);
+}, 800);
+
+animate();
+
+// --- MUSIC AUTO-START ON CLICK FROM 10 SECONDS ---
+const music = document.getElementById('bg-music');
+
+document.body.addEventListener('click', () => {
+  music.currentTime = 21; // start at 10 seconds
+  music.play();
+}, { once: true });
 </script>
 
 </body>
